@@ -1,11 +1,10 @@
 #![feature(box_syntax)]
 
 
-fn fix< F: ?Sized> (f : &F, x : i32) -> i32
-    where F: Fn(&Fn(i32)->i32, i32) -> i32
+fn fix<A, F: ?Sized> (f : &F, x : A) -> A
+    where F: Fn(&Fn(A)->A, A) -> A
 {
-    let z :&Fn(i32)->i32= 
-        &move |y:i32| -> i32 {
+    let z = &move |y| {
             fix(f, y)
         };
     f(z, x)
