@@ -1,4 +1,6 @@
 #![feature(box_syntax)]
+
+
 fn fix< F: ?Sized> (f : &F, x : i32) -> i32
     where F: Fn(&Fn(i32)->i32, i32) -> i32
 {
@@ -18,6 +20,8 @@ fn main(){
     let x = fix(&fact5, 5);
     println!("{}", x);
 }
+
+/**********************/
 
 fn fact(x : i32) -> i32 {
     if x == 1 {1}
