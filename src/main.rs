@@ -12,22 +12,22 @@ fn fact9<F> (f: F) -> i32
     let m = Mu{un_mu:box f};
     5
 }
-
-fn fix<'a, F> (f : &'a F, x : i32) -> i32
-    where F: Fn(Box<Fn(i32)->Fn(i32)>, i32) -> i32
+fn fix<'a, F: 'a + ?Sized> (f : &'a F, x : i32) -> i32
+    where F: Fn(Box<Fn(i32)->i32 + 'a>, i32) -> i32
 {
-    let z :Box<Fn(i32)->i32> = box (
+    let z :Box<Fn(i32)->i32 + 'a> = box (
         move |y:i32| -> i32 {
             fix(f, y)
         });
     f(z, x)
 }
 
-fn fact5(f : Box<(Fn(i32) -> i32)>, x : i32) -> i32
+fn fact5(g : Box<(Fn(i32) -> i32)>, x : i32) -> i32
 {
     if x == 1 {1}
-    else      {x * f(x-1)}
+    else      {x * g(x-1)}
 }
+static Fact5: &'static Fn(Box<Fn(i32) -> i32>, i32)->i32 = &fact5;
 
 fn fact4(f : Box<(Fn(i32) -> i32)>) -> Box<Fn(i32) -> i32>
 {
@@ -40,7 +40,7 @@ fn fact4(f : Box<(Fn(i32) -> i32)>) -> Box<Fn(i32) -> i32>
 fn main(){
     println!("{}", fact2(3, fact));
     println!("{}", fact3(fact3(Box::new(fact)))(4));
-    println!("{}", fix(&fact5, 5));
+    println!("{}", fix(Fact5, 5));
 }
 
 
